@@ -1,0 +1,7 @@
+# Copy to your user-level ~/.npmrc or project .npmrc if IT provides a corporate root CA.
+# Do NOT commit real .npmrc with secrets or company-specific paths unless your team agrees.
+#
+# cafile=C:/Users/you/certs/corp-root.pem
+#
+# If npm still fails TLS after setting NODE_OPTIONS=--use-system-ca, ask IT for the
+# inspection root certificate in PEM format and uncomment cafile above.

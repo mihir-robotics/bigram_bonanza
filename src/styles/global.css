@@ -1,0 +1,333 @@
+:root {
+  color-scheme: light;
+  --cream: #f0ebe1;
+  --ink: #18160f;
+  --rust: #c94e14;
+  --muted: #7a7060;
+  --line: rgba(24, 22, 15, 0.13);
+  --success: #2d6a4f;
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+  --tile-min: 3.25rem;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--cream);
+}
+
+#app {
+  position: relative;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 4rem);
+  min-height: 100dvh;
+}
+
+.view {
+  display: none;
+  padding-block: clamp(1.5rem, 4vw, 3rem);
+  border-top: 1px solid var(--line);
+}
+
+#app[data-active-view="train"] .view--train,
+#app[data-active-view="predict"] .view--predict {
+  display: block;
+}
+
+.view--entering {
+  animation: view-enter 0.55s var(--ease-spring) both;
+}
+
+@keyframes view-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 clamp(1rem, 3vw, 1.75rem);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+
+.display-title {
+  margin: 0 0 clamp(0.75rem, 2vw, 1.25rem);
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.75rem, 10vw, 5.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+
+.display-title--sm {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.display-title .accent {
+  font-style: italic;
+  color: var(--rust);
+}
+
+.body-hint {
+  margin: 0 0 clamp(1.25rem, 3vw, 2rem);
+  max-width: 36rem;
+  font-size: 1.05rem;
+  color: var(--muted);
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+textarea,
+input[type="text"] {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  transition: border-color var(--transition);
+}
+
+textarea:focus,
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+textarea {
+  min-height: clamp(12rem, 35vh, 18rem);
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: clamp(1rem, 2vw, 1.5rem);
+  padding-top: clamp(1rem, 2vw, 1.5rem);
+  border-top: 1px solid var(--line);
+}
+
+button,
+label.btn-pill {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid var(--ink);
+  padding: 0.65rem 1.25rem;
+  background: transparent;
+  color: var(--ink);
+  display: inline-block;
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    opacity var(--transition);
+}
+
+button:hover:not(:disabled),
+label.btn-pill:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button.btn-pill--ghost {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+button.btn-pill--ghost:hover:not(:disabled) {
+  background: transparent;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+button.hidden {
+  display: none;
+}
+
+.file-input-wrap {
+  position: relative;
+}
+
+.file-input-wrap input[type="file"] {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.status {
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  min-height: 1.25rem;
+}
+
+.status--success {
+  color: var(--success);
+}
+
+.status--error {
+  color: var(--rust);
+}
+
+.status--muted {
+  color: var(--muted);
+}
+
+.legend {
+  margin: 0 0 clamp(1rem, 2vw, 1.5rem);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.predict-block {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile-min), 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  min-height: 2rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: none;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 1.35rem;
+  background: var(--cream);
+  transition: background-color var(--transition);
+  animation: tile-enter 0.45s var(--ease-spring) backwards;
+}
+
+.tile-char--space {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tile-prob {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+  margin-top: 0.2rem;
+}
+
+@keyframes tile-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: clamp(1.25rem, 3vw, 2rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view--entering {
+    animation: none;
+  }
+
+  .tile {
+    animation: none;
+    transition: background-color var(--transition);
+  }
+
+  button,
+  label.btn-pill {
+    transition: opacity var(--transition);
+  }
+}
