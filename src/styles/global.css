@@ -43,6 +43,7 @@ body {
   display: none;
   padding-block: clamp(1.5rem, 4vw, 3rem);
   border-top: 1px solid var(--line);
+  text-align: center;
 }
 
 #app[data-active-view="train"] .view--train,
@@ -65,27 +66,6 @@ body {
   }
 }
 
-.eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0 0 clamp(1rem, 3vw, 1.75rem);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.eyebrow::before {
-  content: "";
-  width: 28px;
-  height: 1px;
-  background: var(--line);
-  flex-shrink: 0;
-}
-
 .display-title {
   margin: 0 0 clamp(0.75rem, 2vw, 1.25rem);
   font-family: var(--font-display);
@@ -93,6 +73,7 @@ body {
   font-size: clamp(2.75rem, 10vw, 5.5rem);
   line-height: 0.92;
   letter-spacing: -0.02em;
+  text-align: center;
 }
 
 .display-title--sm {
@@ -107,8 +88,10 @@ body {
 .body-hint {
   margin: 0 0 clamp(1.25rem, 3vw, 2rem);
   max-width: 36rem;
+  margin-inline: auto;
   font-size: 1.05rem;
   color: var(--muted);
+  text-align: center;
 }
 
 .field-label {
@@ -120,6 +103,7 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: center;
 }
 
 textarea,
@@ -153,6 +137,7 @@ textarea {
   flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
+  justify-content: center;
   margin-top: clamp(1rem, 2vw, 1.5rem);
   padding-top: clamp(1rem, 2vw, 1.5rem);
   border-top: 1px solid var(--line);
@@ -224,6 +209,7 @@ button.hidden {
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   min-height: 1.25rem;
+  text-align: center;
 }
 
 .status--success {
@@ -245,6 +231,7 @@ button.hidden {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: center;
 }
 
 .predict-block {
@@ -308,7 +295,7 @@ button.hidden {
 .footer-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 1rem;
   margin-top: clamp(1.25rem, 3vw, 2rem);

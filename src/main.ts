@@ -48,7 +48,6 @@ function buildApp(): void {
     attrs: { "aria-label": "Train on corpus" },
   });
   trainView.append(
-    createEl("p", { className: "eyebrow", text: "Step 01 — Corpus" }),
     displayTitle([
       { text: "Bigram " },
       { text: "Bonanza", accent: true },
@@ -113,7 +112,6 @@ function buildApp(): void {
     attrs: { "aria-label": "Predict next character", "aria-hidden": "true", inert: "" },
   });
   predictView.append(
-    createEl("p", { className: "eyebrow", text: "Step 02 — Predict" }),
     displayTitle(
       [
         { text: "What comes " },
