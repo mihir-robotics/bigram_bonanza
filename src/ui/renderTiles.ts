@@ -1,13 +1,6 @@
-import type { Prediction } from "../model/bigram";
+import type { Prediction } from "../model/ngram";
 import { probToColor } from "../util/color";
 import { createEl } from "./dom";
-
-function displayChar(char: string): { label: string; extraClass: string } {
-  if (char === " ") return { label: "space", extraClass: "tile-char--space" };
-  if (char === "\n") return { label: "↵", extraClass: "tile-char--space" };
-  if (char === "\t") return { label: "tab", extraClass: "tile-char--space" };
-  return { label: char, extraClass: "" };
-}
 
 function formatPercent(p: number): string {
   return `${(p * 100).toFixed(1)}%`;
@@ -27,26 +20,25 @@ export function renderTiles(
   const maxP = predictions[0]!.probability;
 
   predictions.forEach((pred, index) => {
-    const { label, extraClass } = displayChar(pred.char);
     const tile = createEl("div", {
       className: "tile",
       attrs: {
         role: "listitem",
-        "aria-label": `Next character ${label}, probability ${formatPercent(pred.probability)}`,
+        "aria-label": `Next word ${pred.token}, probability ${formatPercent(pred.probability)}`,
         style: `background-color: ${probToColor(pred.probability, minP, maxP)}; animation-delay: ${index * 55}ms`,
       },
     });
 
-    const charSpan = createEl("span", {
-      className: `tile-char ${extraClass}`.trim(),
-      text: label,
+    const wordSpan = createEl("span", {
+      className: "tile-word",
+      text: pred.token,
     });
     const probSpan = createEl("span", {
       className: "tile-prob",
       text: formatPercent(pred.probability),
     });
 
-    tile.append(charSpan, probSpan);
+    tile.append(wordSpan, probSpan);
     container.append(tile);
   });
 }

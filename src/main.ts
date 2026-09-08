@@ -1,5 +1,5 @@
-import { BigramModel } from "./model/bigram";
-import { validateCorpusLength } from "./model/tokenizer";
+import { NgramModel } from "./model/ngram";
+import { tokenizeWords, validateCorpusForNgram } from "./model/tokenizer";
 import { createEl } from "./ui/dom";
 import { renderTiles } from "./ui/renderTiles";
 import { showView, type ViewName } from "./ui/views";
@@ -8,7 +8,7 @@ import { readFileAsText } from "./util/fileReader";
 const TOP_K = 20;
 const DEBOUNCE_MS = 150;
 
-const model = new BigramModel();
+const model = new NgramModel();
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
 function setStatus(
@@ -38,6 +38,10 @@ function displayTitle(
   return h1;
 }
 
+function parseOrder(select: HTMLSelectElement): number {
+  return Number.parseInt(select.value, 10);
+}
+
 function buildApp(): void {
   const root = document.querySelector("#app") as HTMLElement | null;
   if (!root) return;
@@ -54,9 +58,36 @@ function buildApp(): void {
     ]),
     createEl("p", {
       className: "body-hint",
-      text: "Paste or upload text to train a character bigram model. Training is case-sensitive: T and t are different contexts.",
+      text: "Word n-grams — paste or upload text, choose N (2–4), then train. Predict the next word from your corpus.",
     }),
   );
+
+  const trainOptions = createEl("div", { className: "train-options" });
+
+  const orderLabel = createEl("label", {
+    className: "field-label train-options__label",
+    text: "N-gram size",
+    attrs: { for: "ngram-order" },
+  });
+  const orderSelect = createEl("select", {
+    className: "train-options__select",
+    attrs: { id: "ngram-order", name: "ngram-order" },
+  }) as HTMLSelectElement;
+  for (const n of [2, 3, 4]) {
+    const opt = createEl("option", {
+      text: String(n),
+      attrs: { value: String(n) },
+    });
+    orderSelect.append(opt);
+  }
+
+  const ignoreCaseWrap = createEl("label", { className: "train-options__check" });
+  const ignoreCaseInput = createEl("input", {
+    attrs: { type: "checkbox", id: "ignore-case", checked: "true" },
+  }) as HTMLInputElement;
+  ignoreCaseWrap.append(ignoreCaseInput, document.createTextNode(" Ignore case"));
+
+  trainOptions.append(orderLabel, orderSelect, ignoreCaseWrap);
 
   const corpusLabel = createEl("label", {
     className: "field-label",
@@ -105,11 +136,11 @@ function buildApp(): void {
     attrs: { role: "status", "aria-live": "polite" },
   });
 
-  trainView.append(corpusLabel, corpusInput, trainActions, trainStatus);
+  trainView.append(trainOptions, corpusLabel, corpusInput, trainActions, trainStatus);
 
   const predictView = createEl("section", {
     className: "view view--predict",
-    attrs: { "aria-label": "Predict next character", "aria-hidden": "true", inert: "" },
+    attrs: { "aria-label": "Predict next word", "aria-hidden": "true", inert: "" },
   });
   predictView.append(
     displayTitle(
@@ -122,14 +153,14 @@ function buildApp(): void {
     ),
     createEl("p", {
       className: "legend",
-      text: "Greener = more likely next character (given your corpus).",
+      text: "Greener = more likely next word (given your corpus).",
     }),
   );
 
   const predictBlock = createEl("div", { className: "predict-block" });
   const predictLabel = createEl("label", {
     className: "field-label",
-    text: "Word or sentence",
+    text: "Words or sentence",
     attrs: { for: "predict-input" },
   });
   const predictInput = createEl("input", {
@@ -149,7 +180,7 @@ function buildApp(): void {
 
   const tileGrid = createEl("div", {
     className: "tile-grid",
-    attrs: { role: "list", "aria-label": "Top next-character predictions" },
+    attrs: { role: "list", "aria-label": "Top next-word predictions" },
   });
 
   const footerActions = createEl("div", { className: "footer-actions" });
@@ -172,6 +203,13 @@ function buildApp(): void {
 
   const views = { train: trainView, predict: predictView };
 
+  function getTrainOptions() {
+    return {
+      order: parseOrder(orderSelect),
+      ignoreCase: ignoreCaseInput.checked,
+    };
+  }
+
   function syncContinueButton(): void {
     if (model.isReady()) {
       continueBtn.classList.remove("hidden");
@@ -187,36 +225,45 @@ function buildApp(): void {
     }
   }
 
+  function formatContext(words: string[]): string {
+    return words.join(" ");
+  }
+
   function updatePredictions(): void {
     if (!model.isReady()) return;
 
+    const order = model.getOrder();
+    const contextLen = order - 1;
+    const ignoreCase = model.getIgnoreCase();
     const value = predictInput.value;
-    if (value.length === 0) {
+
+    if (value.trim().length === 0) {
       renderTiles(tileGrid, null);
+      setStatus(predictStatus, "Type words to see predictions.", "muted");
+      return;
+    }
+
+    const tokens = tokenizeWords(value, ignoreCase);
+    if (tokens.length < contextLen) {
+      renderTiles(tileGrid, null);
+      const need =
+        contextLen === 1 ? "1 word" : `${contextLen} words`;
       setStatus(
         predictStatus,
-        "Type something to see predictions.",
+        `Type at least ${need} for context (${order}-gram model).`,
         "muted",
       );
       return;
     }
 
-    const context = value[value.length - 1]!;
+    const context = tokens.slice(-contextLen);
     const preds = model.getPredictions(context, TOP_K);
 
     if (!preds) {
       renderTiles(tileGrid, null);
-      const shown =
-        context === " "
-          ? "space"
-          : context === "\n"
-            ? "newline"
-            : context === "\t"
-              ? "tab"
-              : context;
       setStatus(
         predictStatus,
-        `No predictions for “${shown}” in this corpus.`,
+        `No predictions for “${formatContext(context)}” in this corpus.`,
         "error",
       );
       return;
@@ -225,7 +272,7 @@ function buildApp(): void {
     renderTiles(tileGrid, preds);
     setStatus(
       predictStatus,
-      `Top ${preds.length} successors after “${context === " " ? "space" : context}”.`,
+      `Top ${preds.length} next words after “${formatContext(context)}”.`,
       "muted",
     );
   }
@@ -237,14 +284,19 @@ function buildApp(): void {
 
   trainBtn.addEventListener("click", () => {
     const corpus = corpusInput.value;
-    const validation = validateCorpusLength(corpus);
+    const options = getTrainOptions();
+    const validation = validateCorpusForNgram(
+      corpus,
+      options.order,
+      options.ignoreCase,
+    );
     if (validation) {
       setStatus(trainStatus, validation, "error");
       return;
     }
 
     trainBtn.disabled = true;
-    const result = model.train(corpus);
+    const result = model.train(corpus, options);
     trainBtn.disabled = false;
 
     if (!result.ok) {
@@ -254,7 +306,7 @@ function buildApp(): void {
 
     setStatus(
       trainStatus,
-      `Model ready — ${result.contextCount} contexts, ${result.transitionCount} transitions.`,
+      `${result.order}-gram ready — ${result.contextCount} contexts, ${result.transitionCount} transitions.`,
       "success",
     );
     syncContinueButton();
@@ -295,7 +347,7 @@ function buildApp(): void {
   resetBtn.addEventListener("click", () => {
     predictInput.value = "";
     renderTiles(tileGrid, null);
-    setStatus(predictStatus, "Type something to see predictions.", "muted");
+    setStatus(predictStatus, "Type words to see predictions.", "muted");
     if (debounceTimer) clearTimeout(debounceTimer);
   });
 

@@ -29,6 +29,7 @@ body {
   line-height: 1.55;
   color: var(--ink);
   background: var(--cream);
+  overflow-x: hidden;
 }
 
 #app {
@@ -36,6 +37,9 @@ body {
   max-width: 1160px;
   margin: 0 auto;
   padding: clamp(1.5rem, 5vw, 4rem);
+  padding-left: max(clamp(1.5rem, 5vw, 4rem), env(safe-area-inset-left));
+  padding-right: max(clamp(1.5rem, 5vw, 4rem), env(safe-area-inset-right));
+  padding-bottom: max(clamp(1.5rem, 5vw, 4rem), env(safe-area-inset-bottom));
   min-height: 100dvh;
 }
 
@@ -92,6 +96,44 @@ body {
   font-size: 1.05rem;
   color: var(--muted);
   text-align: center;
+}
+
+.train-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.5rem;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  padding-bottom: clamp(1rem, 2vw, 1.5rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.train-options__label {
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.train-options__select {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  min-height: 44px;
+}
+
+.train-options__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  cursor: pointer;
+  min-height: 44px;
 }
 
 .field-label {
@@ -154,9 +196,12 @@ label.btn-pill {
   border-radius: 999px;
   border: 1px solid var(--ink);
   padding: 0.65rem 1.25rem;
+  min-height: 44px;
   background: transparent;
   color: var(--ink);
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition:
     background var(--transition),
     color var(--transition),
@@ -265,11 +310,14 @@ button.hidden {
   animation: tile-enter 0.45s var(--ease-spring) backwards;
 }
 
-.tile-char--space {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.tile-word {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0 0.35rem;
+  word-break: break-word;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .tile-prob {
@@ -301,6 +349,27 @@ button.hidden {
   margin-top: clamp(1.25rem, 3vw, 2rem);
   padding-top: 1.25rem;
   border-top: 1px solid var(--line);
+}
+
+@media (max-width: 640px) {
+  textarea,
+  input[type="text"] {
+    font-size: 16px;
+  }
+
+  .tile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tile {
+    aspect-ratio: auto;
+    min-height: 3.5rem;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .train-options {
+    flex-direction: column;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
