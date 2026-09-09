@@ -351,6 +351,22 @@ button.hidden {
   border-top: 1px solid var(--line);
 }
 
+@media (min-width: 641px) {
+  .tile-grid {
+    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  }
+
+  .tile-word {
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 640px) {
   textarea,
   input[type="text"] {
@@ -365,6 +381,11 @@ button.hidden {
     aspect-ratio: auto;
     min-height: 3.5rem;
     padding: 0.75rem 0.5rem;
+  }
+
+  .tile-word {
+    word-break: break-word;
+    hyphens: none;
   }
 
   .train-options {

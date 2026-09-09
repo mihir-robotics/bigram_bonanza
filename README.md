@@ -1,6 +1,6 @@
 # Bigram Bonanza
 
-A minimal, client-only web app: paste or upload a text corpus, train a **word n-gram** model (N = 2–4) in the browser, then type words to see the **top 20** next-word predictions as a green (likely) → red (less likely) tile map.
+A minimal, client-only web app: paste or upload a text corpus, train a **word n-gram** model (N = 2–4) in the browser, then type words to see the **top 30** next-word predictions as a green (likely) → red (less likely) tile map.
 
 All processing stays in your browser. Nothing is sent to a server.
 

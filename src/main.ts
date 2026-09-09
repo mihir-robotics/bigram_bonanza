@@ -5,7 +5,7 @@ import { renderTiles } from "./ui/renderTiles";
 import { showView, type ViewName } from "./ui/views";
 import { readFileAsText } from "./util/fileReader";
 
-const TOP_K = 20;
+const TOP_K = 30;
 const DEBOUNCE_MS = 150;
 
 const model = new NgramModel();

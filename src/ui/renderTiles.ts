@@ -32,6 +32,7 @@ export function renderTiles(
     const wordSpan = createEl("span", {
       className: "tile-word",
       text: pred.token,
+      attrs: { title: pred.token },
     });
     const probSpan = createEl("span", {
       className: "tile-prob",
